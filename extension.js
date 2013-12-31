@@ -28,7 +28,7 @@ const AudioOutputSubMenu = new Lang.Class({
     },
     
     _updateDefaultSink: function () {
-        this.label.set_text(this._control.get_default_sink().get_description());
+        this.label.set_text("OUT: " + this._control.get_default_sink().get_description());
     },
     
     _updateSinkList: function () {
