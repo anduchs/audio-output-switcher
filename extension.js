@@ -9,7 +9,7 @@ const AudioOutputSubMenu = new Lang.Class({
     _init: function() {
         this.parent('Audio Output: Connecting...', true);
 
-        this.icon.icon_name = 'audio-speakers-symbolic';
+//        this.icon.icon_name = 'audio-speakers-symbolic';
 
         this._control = Main.panel.statusArea.aggregateMenu._volume._control;
         
@@ -60,17 +60,16 @@ function enable() {
         return;
     audioOutputSubMenu = new AudioOutputSubMenu();
     //Try to add the output-switcher above the input-switcher...
-    volMen = Main.panel.statusArea.aggregateMenu._volume.menu;
+    volMen = Main.panel.statusArea.aggregateMenu._volume._volumeMenu;
     items = volMen._getMenuItems();
-    i = 0; 
-    while (i < items.length)
+    i = 1; 
+/*    while (i < items.length)
         if (items[i].toString() == "[object AudioInputSubMenu]")
             break;
         else
             i++;
-    Main.AF = i;
+  */
     volMen.addMenuItem(audioOutputSubMenu, i);
-    //Main.panel.statusArea.aggregateMenu._volume.menu.addMenuItem(audioOutputSubMenu);
 }
 
 function disable() {
