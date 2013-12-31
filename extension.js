@@ -59,7 +59,18 @@ function enable() {
     if (audioOutputSubMenu != null)
         return;
     audioOutputSubMenu = new AudioOutputSubMenu();
-    Main.panel.statusArea.aggregateMenu._volume.menu.addMenuItem(audioOutputSubMenu);
+    //Try to add the output-switcher above the input-switcher...
+    volMen = Main.panel.statusArea.aggregateMenu._volume.menu;
+    items = volMen._getMenuItems();
+    i = 0; 
+    while (i < items.length)
+        if (items[i].toString() == "[object AudioInputSubMenu]")
+            break;
+        else
+            i++;
+    Main.AF = i;
+    volMen.addMenuItem(audioOutputSubMenu, i);
+    //Main.panel.statusArea.aggregateMenu._volume.menu.addMenuItem(audioOutputSubMenu);
 }
 
 function disable() {
