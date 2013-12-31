@@ -7,7 +7,8 @@ all available output devices and let's you choose which one to use.
 
 Most importantly this extension is a s simple as possible. Therefore it does not
 include an imput switcher or similar.
-See Audio-Input-Switcher extension for microphone selection.
+See Audio-Input-Switcher (https://github.com/anduchs/audio-input-switcher)
+extension for microphone selection.
 
 INSTALL
 =======
@@ -22,8 +23,3 @@ or via
 
 Then resart the gnome-shell via CTRL+F2 r and enable the extension using gnome-tweak-tool
 
-
-TODO
-====
-
-- Get some nice icon in front of the entry (speaker)

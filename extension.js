@@ -9,6 +9,8 @@ const AudioOutputSubMenu = new Lang.Class({
     _init: function() {
         this.parent('Audio Output: Connecting...', true);
 
+        this.icon.icon_name = 'audio-speakers-symbolic';
+
         this._control = Main.panel.statusArea.aggregateMenu._volume._control;
         
         this._control.connect('default-sink-changed', Lang.bind(this, function() {
@@ -28,7 +30,7 @@ const AudioOutputSubMenu = new Lang.Class({
     },
     
     _updateDefaultSink: function () {
-        this.label.set_text("OUT: " + this._control.get_default_sink().get_description());
+        this.label.set_text("" + this._control.get_default_sink().get_description());
     },
     
     _updateSinkList: function () {
