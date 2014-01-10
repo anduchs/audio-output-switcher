@@ -30,12 +30,20 @@ const AudioOutputSubMenu = new Lang.Class({
     },
 
     _updateDefaultSink: function () {
-        defsink = this._control.get_default_sink();
-        //Unfortunately, Gvc neglects some pulse-devices, such as all "Monitor of ..."
-        if (defsink == null)
-            this.label.set_text("Other");
-        else
-            this.label.set_text(defsink.get_description());
+        let defsink = this._control.get_default_sink();
+        let sinklist = this._control.get_sinks();
+
+        if (sinklist.length == 1) {
+            this.actor.hide();
+        }
+        else {
+            this.actor.show();
+            // Unfortunately, Gvc neglects some pulse-devices, such as all "Monitor of ..."
+            if (defsink == null)
+                this.label.set_text("Other");
+            else
+                this.label.set_text(defsink.get_description());
+        }
     },
 
     _updateSinkList: function () {
