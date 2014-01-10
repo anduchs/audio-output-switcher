@@ -27,14 +27,6 @@ const AudioOutputSubMenu = new Lang.Class({
         //Unless there is at least one item here, no 'open' will be emitted...
         let item = new PopupMenu.PopupMenuItem('Connecting...');
         this.menu.addMenuItem(item);
-
-        //This is a hack, since I don't know how to call a parent class' function from
-        //within the override function on gjs; i.e. this.parent.destroy() does not exist...
-        this.origdestroy = this.destroy;
-        this.destroy = Lang.bind(this, function() {
-            this._control.disconnect(this._controlSignal);
-            this.origdestroy();
-        });
     },
 
     _updateDefaultSink: function () {
@@ -64,6 +56,11 @@ const AudioOutputSubMenu = new Lang.Class({
             this.menu.addMenuItem(item);
         }
     },
+
+    destroy: function() {
+        this._control.disconnect(this._controlSignal);
+        this.parent();
+    }
 });
 
 let audioOutputSubMenu = null;
