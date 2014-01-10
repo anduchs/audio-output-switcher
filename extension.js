@@ -12,18 +12,18 @@ const AudioOutputSubMenu = new Lang.Class({
 //        this.icon.icon_name = 'audio-speakers-symbolic';
 
         this._control = Main.panel.statusArea.aggregateMenu._volume._control;
-        
+
         this._controlSignal = this._control.connect('default-sink-changed', Lang.bind(this, function() {
             this._updateDefaultSink();
         }));
-        
+
         this._updateDefaultSink();
 
         this.menu.connect('open-state-changed', Lang.bind(this, function(menu, isOpen) {
             if (isOpen)
                 this._updateSinkList();
         }));
-        
+
         //Unless there is at least one item here, no 'open' will be emitted...
         let item = new PopupMenu.PopupMenuItem('Connecting...');
         this.menu.addMenuItem(item);
@@ -36,7 +36,7 @@ const AudioOutputSubMenu = new Lang.Class({
             this.origdestroy();
         });
     },
-    
+
     _updateDefaultSink: function () {
         defsink = this._control.get_default_sink();
         //Unfortunately, Gvc neglects some pulse-devices, such as all "Monitor of ..."
@@ -45,7 +45,7 @@ const AudioOutputSubMenu = new Lang.Class({
         else
             this.label.set_text(defsink.get_description());
     },
-    
+
     _updateSinkList: function () {
         this.menu.removeAll();
 
