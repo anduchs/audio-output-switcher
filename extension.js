@@ -12,58 +12,63 @@ const AudioOutputSubMenu = new Lang.Class({
 //        this.icon.icon_name = 'audio-speakers-symbolic';
 
         this._control = Main.panel.statusArea.aggregateMenu._volume._control;
-        
+
         this._controlSignal = this._control.connect('default-sink-changed', Lang.bind(this, function() {
             this._updateDefaultSink();
         }));
-        
+
         this._updateDefaultSink();
 
         this.menu.connect('open-state-changed', Lang.bind(this, function(menu, isOpen) {
             if (isOpen)
                 this._updateSinkList();
         }));
-        
-        //Unless there is at least one item here, no 'open' will be emitted...
-        item = new PopupMenu.PopupMenuItem('Connecting...');
-        this.menu.addMenuItem(item);
 
-        //This is a hack, since I don't know how to call a parent class' function from
-        //within the override function on gjs; i.e. this.parent.destroy() does not exist...
-        this.origdestroy = this.destroy;
-        this.destroy = Lang.bind(this, function() {
-            this._control.disconnect(this._controlSignal);
-            this.origdestroy();
-        });
+        //Unless there is at least one item here, no 'open' will be emitted...
+        let item = new PopupMenu.PopupMenuItem('Connecting...');
+        this.menu.addMenuItem(item);
     },
-    
+
     _updateDefaultSink: function () {
-        defsink = this._control.get_default_sink();
-        //Unfortunately, Gvc neglects some pulse-devices, such as all "Monitor of ..."
-        if (defsink == null)
-            this.label.set_text("Other");
-        else
-            this.label.set_text(defsink.get_description());
+        let defsink = this._control.get_default_sink();
+        let sinklist = this._control.get_sinks();
+
+        if (sinklist.length == 1) {
+            this.actor.hide();
+        }
+        else {
+            this.actor.show();
+            // Unfortunately, Gvc neglects some pulse-devices, such as all "Monitor of ..."
+            if (defsink == null)
+                this.label.set_text("Other");
+            else
+                this.label.set_text(defsink.get_description());
+        }
     },
-    
+
     _updateSinkList: function () {
         this.menu.removeAll();
 
-        defsink = this._control.get_default_sink();
-        sinklist = this._control.get_sinks();
-        control = this._control;
+        let defsink = this._control.get_default_sink();
+        let sinklist = this._control.get_sinks();
+        let control = this._control;
 
-        for (i = 0; i < sinklist.length; i++) {
-            sink = sinklist[i];
+        for (let i=0; i<sinklist.length; i++) {
+            let sink = sinklist[i];
             if (sink === defsink)
                 continue;
-            item = new PopupMenu.PopupMenuItem(sink.get_description());
+            let item = new PopupMenu.PopupMenuItem(sink.get_description());
             item.connect('activate', Lang.bind(sink, function() {
                 control.set_default_sink(this);
             }));
             this.menu.addMenuItem(item);
         }
     },
+
+    destroy: function() {
+        this._control.disconnect(this._controlSignal);
+        this.parent();
+    }
 });
 
 let audioOutputSubMenu = null;
@@ -77,9 +82,9 @@ function enable() {
     audioOutputSubMenu = new AudioOutputSubMenu();
 
     //Try to add the output-switcher right below the output slider...
-    volMen = Main.panel.statusArea.aggregateMenu._volume._volumeMenu;
-    items = volMen._getMenuItems();
-    i = 0; 
+    let volMen = Main.panel.statusArea.aggregateMenu._volume._volumeMenu;
+    let items = volMen._getMenuItems();
+    let i = 0;
     while (i < items.length)
         if (items[i] === volMen._output.item)
             break;
