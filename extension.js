@@ -25,7 +25,7 @@ const AudioOutputSubMenu = new Lang.Class({
         }));
         
         //Unless there is at least one item here, no 'open' will be emitted...
-        item = new PopupMenu.PopupMenuItem('Connecting...');
+        let item = new PopupMenu.PopupMenuItem('Connecting...');
         this.menu.addMenuItem(item);
 
         //This is a hack, since I don't know how to call a parent class' function from
@@ -49,15 +49,15 @@ const AudioOutputSubMenu = new Lang.Class({
     _updateSinkList: function () {
         this.menu.removeAll();
 
-        defsink = this._control.get_default_sink();
-        sinklist = this._control.get_sinks();
-        control = this._control;
+        let defsink = this._control.get_default_sink();
+        let sinklist = this._control.get_sinks();
+        let control = this._control;
 
-        for (i = 0; i < sinklist.length; i++) {
-            sink = sinklist[i];
+        for (let i=0; i<sinklist.length; i++) {
+            let sink = sinklist[i];
             if (sink === defsink)
                 continue;
-            item = new PopupMenu.PopupMenuItem(sink.get_description());
+            let item = new PopupMenu.PopupMenuItem(sink.get_description());
             item.connect('activate', Lang.bind(sink, function() {
                 control.set_default_sink(this);
             }));
@@ -77,9 +77,9 @@ function enable() {
     audioOutputSubMenu = new AudioOutputSubMenu();
 
     //Try to add the output-switcher right below the output slider...
-    volMen = Main.panel.statusArea.aggregateMenu._volume._volumeMenu;
-    items = volMen._getMenuItems();
-    i = 0; 
+    let volMen = Main.panel.statusArea.aggregateMenu._volume._volumeMenu;
+    let items = volMen._getMenuItems();
+    let i = 0;
     while (i < items.length)
         if (items[i] === volMen._output.item)
             break;
