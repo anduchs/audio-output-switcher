@@ -55,6 +55,11 @@ const AudioOutputSubMenu = new Lang.Class({
             }));
             this.menu.addMenuItem(item);
         }
+        if (sinklist.length == 0 ||
+            (sinklist.length == 1 && sinklist[0] === defsink)) {
+            item = new PopupMenu.PopupMenuItem("No more Devices");
+            this.menu.addMenuItem(item);
+        }
     },
 
     destroy: function() {
