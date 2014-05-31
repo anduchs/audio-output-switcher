@@ -11,82 +11,72 @@ const AudioOutputSubMenu = new Lang.Class({
 
 		this._control = Main.panel.statusArea.aggregateMenu._volume._control;
 
-		this._controlSignal = this._control.connect('default-sink-changed', Lang.bind(this, function() {
-			this._updateDefaultSink();
+		this._entries = {};
+		this._numEntries = 0;
+		this._activeEntry = null;
+
+		this._emptyItem = new PopupMenu.PopupMenuItem("No more Devices...");
+		this.menu.addMenuItem(this._emptyItem);
+
+		//No population of submenu necessary.
+		//MixerControl sends events for all devices on connect as it seems.
+		//Same is true for active output... Therefore this weird order here...
+
+		this._controlSignal = this._control.connect('output-added', Lang.bind(this, function(control, id) {
+			this._outputAdded(id);
 		}));
 
-		this._updateDefaultSink();
-
-		this.menu.connect('open-state-changed', Lang.bind(this, function(menu, isOpen) {
-			// TODO: this is very hacky. Unfortunately there is no port-changed-signal...
-			this._updateDefaultSink();
-			if (isOpen)
-				this._updateSinkList();
+		this._controlSignal = this._control.connect('output-removed', Lang.bind(this, function(control, id) {
+			this._outputRemoved(id);
 		}));
 
-		//Unless there is at least one item here, no 'open' will be emitted...
-		let item = new PopupMenu.PopupMenuItem('Connecting...');
+		this._controlSignal = this._control.connect('active-output-update', Lang.bind(this, function(control, id) {
+			this._outputUpdate(id);
+		}));
+	},
+
+	_outputUpdate: function (id) {
+		if (this._activeEntry != null)
+			this._activeEntry.actor.show();
+		let output = this._control.lookup_output_id(id);
+		if (output == null) {
+			this.label.set_text("Unknown Device");
+			return;
+		}
+		this.label.set_text(output.get_description() + " - " + output.get_origin());
+		this._activeEntry = this._entries["ID"+id];
+		if (this._activeEntry != null)
+			this._activeEntry.actor.hide();		
+	},
+
+	_outputAdded: function (id) {
+		let output = this._control.lookup_output_id(id);
+		if (output == null) {
+			return;
+		}
+		let item = new PopupMenu.PopupMenuItem(output.get_description() + " - " + output.get_origin());
+		item.connect('activate', Lang.bind(this, function() {
+			this._control.change_output(output);
+		}));
 		this.menu.addMenuItem(item);
+		this._entries["ID"+id] = item;
+		this._numEntries++;
+		if ((this._activeEntry == null && this._numEntries > 0) || this._numEntries > 1)
+			this._emptyItem.actor.hide();
+		else
+			this._emptyItem.actor.show();
 	},
 
-	_updateDefaultSink: function () {
-		defsink = this._control.get_default_sink();
-		//Unfortunately, Gvc neglects some pulse-devices, such as all "Monitor of ..."
-		if (defsink == null) {
-			this.label.set_text("Other");
+	_outputRemoved: function (id) {
+		let item = this._entries["ID"+id];
+		if (item == null)
 			return;
-		}
-		defport = defsink.get_port();
-		if (defport == null) {
-			this.label.set_text(defsink.get_description());
-			return;
-		}
-		this.label.set_text(defport.human_port + " - " + defsink.get_description());
-	},
-
-	_updateSinkList: function () {
-		this.menu.removeAll();
-
-		let defsink = this._control.get_default_sink();
-		let sinklist = this._control.get_sinks();
-		let control = this._control;
-
-		let entryCount = 0;
-
-		for (let i=0; i<sinklist.length; i++) {
-			let sink = sinklist[i];
-			let defport = sink.get_port()
-			let portlist = sink.get_ports()
-			if (portlist == null || portlist.length == 0) {
-				if (sink === defsink)
-					continue;
-				let item = new PopupMenu.PopupMenuItem(sink.get_description());
-				item.connect('activate', Lang.bind(this, function() {
-					control.set_default_sink(sink);
-				}));
-				this.menu.addMenuItem(item);
-				entryCount ++;
-				continue;
-			}
-			for (let j=0; j < portlist.length; j++) {
-				let port = portlist[j];
-				if (sink === defsink && port.port === defport.port)
-					continue;
-				if (!port.available)
-					continue;
-				let item = new PopupMenu.PopupMenuItem(port.human_port + " - " + sink.get_description());
-				item.connect('activate', Lang.bind(this, function() {
-					control.set_default_sink(sink);
-					sink.change_port(port.port);
-				}));
-				this.menu.addMenuItem(item);
-				entryCount ++;
-			}
-		}
-		if (entryCount == 0) {
-			item = new PopupMenu.PopupMenuItem("No more Devices");
-			this.menu.addMenuItem(item);
-		}
+		item.destroy();
+		this._numEntries--;
+		if ((this._activeEntry == null && this._numEntries > 0) || this._numEntries > 1)
+			this._emptyItem.actor.hide();
+		else
+			this._emptyItem.actor.show();
 	},
 
 	destroy: function() {
