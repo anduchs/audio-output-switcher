@@ -1,15 +1,14 @@
 const Lang = imports.lang;
 const Main = imports.ui.main;
 const PopupMenu = imports.ui.popupMenu;
+const Gvc = imports.gi.Gvc;
 
 const AudioOutputSubMenu = new Lang.Class({
 	Name: 'AudioOutputSubMenu',
 	Extends: PopupMenu.PopupSubMenuMenuItem,
 
 	_init: function() {
-		this.parent('Audio Output: Connecting...', true);
-
-		this._control = Main.panel.statusArea.aggregateMenu._volume._control;
+		this.parent('Connecting...', true);
 
 		this._entries = {};
 		this._numEntries = 0;
@@ -18,19 +17,24 @@ const AudioOutputSubMenu = new Lang.Class({
 		this._emptyItem = new PopupMenu.PopupMenuItem("No more Devices...");
 		this.menu.addMenuItem(this._emptyItem);
 
+		//this._control = Main.panel.statusArea.aggregateMenu._volume._control;
+
+		this._control = new Gvc.MixerControl({ name: 'AudioOutputSwitcher' });
+		this._control.open();
+
 		//No population of submenu necessary.
 		//MixerControl sends events for all devices on connect as it seems.
-		//Same is true for active output... Therefore this weird order here...
+		//Same is true for active output... Therefore this order of connections here...
 
-		this._controlSignal = this._control.connect('output-added', Lang.bind(this, function(control, id) {
+		this._sig1 = this._control.connect('output-added', Lang.bind(this, function(control, id) {
 			this._outputAdded(id);
 		}));
 
-		this._controlSignal = this._control.connect('output-removed', Lang.bind(this, function(control, id) {
+		this._sig2 = this._control.connect('output-removed', Lang.bind(this, function(control, id) {
 			this._outputRemoved(id);
 		}));
 
-		this._controlSignal = this._control.connect('active-output-update', Lang.bind(this, function(control, id) {
+		this._sig3 = this._control.connect('active-output-update', Lang.bind(this, function(control, id) {
 			this._outputUpdate(id);
 		}));
 	},
@@ -80,7 +84,19 @@ const AudioOutputSubMenu = new Lang.Class({
 	},
 
 	destroy: function() {
-		this._control.disconnect(this._controlSignal);
+		if (this._control == null) {
+			this.parent();
+			return;
+		}
+
+		if (this._sig1)
+			this._control.disconnect(this._sig1);
+		if (this._sig2)
+			this._control.disconnect(this._sig2);
+		if (this._sig3)
+			this._control.disconnect(this._sig3);
+		this._control.close();
+
 		this.parent();
 	}
 });
