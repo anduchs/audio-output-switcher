@@ -49,8 +49,6 @@ const AudioOutputSubMenu = new Lang.Class({
 		}
 		this.label.set_text(output.get_description() + " - " + output.get_origin());
 		this._activeEntry = this._entries["ID"+id];
-		if (this._activeEntry != null)
-			this._activeEntry.actor.hide();		
 	},
 
 	_outputAdded: function (id) {
@@ -65,7 +63,7 @@ const AudioOutputSubMenu = new Lang.Class({
 		this.menu.addMenuItem(item);
 		this._entries["ID"+id] = item;
 		this._numEntries++;
-		if ((this._activeEntry == null && this._numEntries > 0) || this._numEntries > 1)
+		if (this._numEntries > 0)
 			this._emptyItem.actor.hide();
 		else
 			this._emptyItem.actor.show();
@@ -77,7 +75,7 @@ const AudioOutputSubMenu = new Lang.Class({
 			return;
 		item.destroy();
 		this._numEntries--;
-		if ((this._activeEntry == null && this._numEntries > 0) || this._numEntries > 1)
+		if (this._numEntries > 0)
 			this._emptyItem.actor.hide();
 		else
 			this._emptyItem.actor.show();
