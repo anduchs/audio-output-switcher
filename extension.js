@@ -1,6 +1,12 @@
+const ExtensionUtils = imports.misc.extensionUtils;
 const Lang = imports.lang;
+const Meta = imports.gi.Meta;
 const Main = imports.ui.main;
 const PopupMenu = imports.ui.popupMenu;
+const Shell = imports.gi.Shell;
+
+const Me = ExtensionUtils.getCurrentExtension();
+const Utils = Me.imports.utils;
 
 const AudioOutputSubMenu = new Lang.Class({
 	Name: 'AudioOutputSubMenu',
@@ -66,9 +72,13 @@ const AudioOutputSubMenu = new Lang.Class({
 	}
 });
 
+let sinkIndex = 0;
+let settings = null;
 let audioOutputSubMenu = null;
 
 function init() {
+	sinkIndex = 0;
+	settings = Utils.getSettings();
 }
 
 function enable() {
@@ -86,6 +96,37 @@ function enable() {
 		else
 			i++;
 	volMen.addMenuItem(audioOutputSubMenu, i+1);
+
+	//Add keyboard shortcut for fast switching
+
+	let keyBindingMode = null;
+	if (Shell.ActionMode) {
+		//KeyBindingMode was renamed to ActionMode in Gnome 3.15.3
+		keyBindingMode = Shell.ActionMode.ALL;
+	} else {
+		keyBindingMode = Shell.KeyBindingMode.ALL;
+	}
+
+	Main.wm.addKeybinding("switch-next-audio-output",
+		settings,
+		Meta.KeyBindingFlags.NONE,
+		keyBindingMode,
+		function(display, screen, window, binding) {
+
+			let control = Main.panel.statusArea.aggregateMenu._volume._control;
+			let sinklist = control.get_sinks();
+
+			if (sinklist.length === 0) {
+				return;
+			}
+			sinkIndex++
+			if (sinkIndex >= sinklist.length) {
+				sinkIndex = 0
+			}
+			let sink = sinklist[sinkIndex];
+			control.set_default_sink(sink);
+		}
+	);
 }
 
 function disable() {
