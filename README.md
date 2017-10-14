@@ -11,7 +11,7 @@ See Audio-Input-Switcher (https://github.com/anduchs/audio-input-switcher)
 extension for microphone selection.
 
 INSTALL
-=======
+-------
 
 Either via 
 
