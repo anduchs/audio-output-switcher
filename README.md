@@ -5,7 +5,7 @@ This extension adds a little entry to the status-menu that shows the currently
 selected pulse-audio-output device. Clicking on that will open a submenu with
 all available output devices and let's you choose which one to use.
 
-Since version 5, it also provides a shortcut to quickly switch input sources: 
+Since version 5, it also provides a shortcut to quickly switch output sources: 
 `<Super>`+`q`
 
 Most importantly this extension is as simple as possible. Therefore it does not
