@@ -24,7 +24,7 @@ or via
 
     git clone https://github.com/adaxi/audio-output-switcher.git ~/.local/share/gnome-shell/extensions/audio-output-switcher@anduchs
 
-Then resart the gnome-shell via `CTRL+F2` then `r` and enable the extension using gnome-tweak-tool
+Then resart the gnome-shell via `Alt+F2` then `r` and enable the extension using gnome-tweak-tool
 
 To update later, just issue
 
