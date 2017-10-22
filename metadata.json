@@ -6,7 +6,8 @@
         "3.16",
         "3.18",
         "3.20",
-        "3.22"
+        "3.22",
+        "3.26"
     ],
     "uuid": "audio-output-switcher@anduchs",
     "name": "Audio Output Switcher",
