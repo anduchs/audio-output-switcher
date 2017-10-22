@@ -10,7 +10,7 @@ Since version 5, it also provides a shortcut to quickly switch output sources:
 
 Most importantly this extension is as simple as possible. Therefore it does not
 include an input switcher or similar.
-See Audio-Input-Switcher (https://github.com/adaxi/audio-input-switcher)
+See Audio-Input-Switcher (https://github.com/anduchs/audio-input-switcher)
 extension for microphone selection.
 
 Install
