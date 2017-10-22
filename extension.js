@@ -12,7 +12,7 @@ const AudioOutputSubMenu = new Lang.Class({
 	Name: 'AudioOutputSubMenu',
 	Extends: PopupMenu.PopupSubMenuMenuItem,
 
-	_init: function() {
+	_init: function () {
 		this.parent('Audio Output: Connecting...', true);
 
 		this._control = Main.panel.statusArea.aggregateMenu._volume._control;
@@ -34,9 +34,9 @@ const AudioOutputSubMenu = new Lang.Class({
 	},
 
 	_updateDefaultSink: function () {
-		defsink = this._control.get_default_sink();
+		let defsink = this._control.get_default_sink();
 		//Unfortunately, Gvc neglects some pulse-devices, such as all "Monitor of ..."
-		if (defsink == null)
+		if (!defsink)
 			this.label.set_text("Other");
 		else
 			this.label.set_text(defsink.get_description());
@@ -76,14 +76,15 @@ let sinkIndex = 0;
 let settings = null;
 let audioOutputSubMenu = null;
 
-function init() {
+function init () {
 	sinkIndex = 0;
 	settings = Utils.getSettings();
 }
 
-function enable() {
-	if (audioOutputSubMenu != null)
+function enable () {
+	if (audioOutputSubMenu) {
 		return;
+	}
 	audioOutputSubMenu = new AudioOutputSubMenu();
 
 	//Try to add the output-switcher right below the output slider...
@@ -129,7 +130,7 @@ function enable() {
 	);
 }
 
-function disable() {
+function disable () {
 	audioOutputSubMenu.destroy();
 	audioOutputSubMenu = null;
 }
