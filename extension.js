@@ -1,5 +1,4 @@
 const ExtensionUtils = imports.misc.extensionUtils;
-const Lang = imports.lang;
 const Meta = imports.gi.Meta;
 const Main = imports.ui.main;
 const PopupMenu = imports.ui.popupMenu;
@@ -8,41 +7,34 @@ const Shell = imports.gi.Shell;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 
-const AudioOutputSubMenu = new Lang.Class({
-	Name: 'AudioOutputSubMenu',
-	Extends: PopupMenu.PopupSubMenuMenuItem,
-
-	_init: function () {
-		this.parent('Audio Output: Connecting...', true);
-
+const AudioOutputSubMenu = class AudioOutputSubMenu extends PopupMenu.PopupSubMenuMenuItem {
+	constructor() {
+		super("Audio Output: Connecting...", true);
 		this._control = Main.panel.statusArea.aggregateMenu._volume._control;
 
-		this._controlSignal = this._control.connect('default-sink-changed', Lang.bind(this, function() {
+		this._controlSignal = this._control.connect('default-sink-changed', () => {
 			this._updateDefaultSink();
-		}));
-
+		});
 		this._updateDefaultSink();
-
-		this.menu.connect('open-state-changed', Lang.bind(this, function(menu, isOpen) {
+		this.menu.connect('open-state-changed', (menu, isOpen) => {
 			if (isOpen)
 				this._updateSinkList();
-		}));
-
+		});
 		//Unless there is at least one item here, no 'open' will be emitted...
 		let item = new PopupMenu.PopupMenuItem('Connecting...');
 		this.menu.addMenuItem(item);
-	},
+	}
 
-	_updateDefaultSink: function () {
+	_updateDefaultSink() {
 		let defsink = this._control.get_default_sink();
 		//Unfortunately, Gvc neglects some pulse-devices, such as all "Monitor of ..."
 		if (!defsink)
 			this.label.set_text("Other");
 		else
 			this.label.set_text(defsink.get_description());
-	},
+	}
 
-	_updateSinkList: function () {
+	_updateSinkList() {
 		this.menu.removeAll();
 
 		let defsink = this._control.get_default_sink();
@@ -54,9 +46,9 @@ const AudioOutputSubMenu = new Lang.Class({
 			if (sink === defsink)
 				continue;
 			let item = new PopupMenu.PopupMenuItem(sink.get_description());
-			item.connect('activate', Lang.bind(sink, function() {
-				control.set_default_sink(this);
-			}));
+			item.connect('activate', () => {
+				control.set_default_sink(sink);
+			});
 			this.menu.addMenuItem(item);
 		}
 		if (sinklist.length == 0 ||
@@ -64,13 +56,13 @@ const AudioOutputSubMenu = new Lang.Class({
 			item = new PopupMenu.PopupMenuItem("No more Devices");
 			this.menu.addMenuItem(item);
 		}
-	},
+	}
 
-	destroy: function() {
+	destroy() {
 		this._control.disconnect(this._controlSignal);
 		this.parent();
 	}
-});
+}
 
 let sinkIndex = 0;
 let settings = null;
