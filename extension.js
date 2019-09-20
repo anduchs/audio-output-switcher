@@ -60,7 +60,7 @@ const AudioOutputSubMenu = class AudioOutputSubMenu extends PopupMenu.PopupSubMe
 
 	destroy() {
 		this._control.disconnect(this._controlSignal);
-		this.parent();
+		super.destroy();
 	}
 }
 
