@@ -3,13 +3,15 @@ const Meta = imports.gi.Meta;
 const Main = imports.ui.main;
 const PopupMenu = imports.ui.popupMenu;
 const Shell = imports.gi.Shell;
+const GObject = imports.gi.GObject;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 
-const AudioOutputSubMenu = class AudioOutputSubMenu extends PopupMenu.PopupSubMenuMenuItem {
-	constructor() {
-		super("Audio Output: Connecting...", true);
+var AudioOutputSubMenu = GObject.registerClass(
+	class AudioOutputSubMenu extends PopupMenu.PopupSubMenuMenuItem {
+	_init() {
+		super._init("Audio Output: Connecting...", true);
 		this._control = Main.panel.statusArea.aggregateMenu._volume._control;
 
 		this._controlSignal = this._control.connect('default-sink-changed', () => {
@@ -60,9 +62,9 @@ const AudioOutputSubMenu = class AudioOutputSubMenu extends PopupMenu.PopupSubMe
 
 	destroy() {
 		this._control.disconnect(this._controlSignal);
-		this.parent();
+		super.destroy();
 	}
-}
+});
 
 let sinkIndex = 0;
 let settings = null;
