@@ -8,7 +8,7 @@ const GObject = imports.gi.GObject;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 
-var AudioOutputSubMenu = GObject.registerClass(
+const AudioOutputSubMenu = GObject.registerClass(
 	class AudioOutputSubMenu extends PopupMenu.PopupSubMenuMenuItem {
 	_init() {
 		super._init("Audio Output: Connecting...", true);
