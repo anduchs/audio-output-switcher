@@ -15,7 +15,9 @@ const AudioOutputSubMenu = GObject.registerClass(
 		this._control = Main.panel.statusArea.aggregateMenu._volume._control;
 
 		this._controlSignal = this._control.connect('default-sink-changed', () => {
-			this._updateDefaultSink();
+			if (this._updateDefaultSink) {
+				this._updateDefaultSink();
+			}
 		});
 		this._updateDefaultSink();
 		this.menu.connect('open-state-changed', (menu, isOpen) => {
