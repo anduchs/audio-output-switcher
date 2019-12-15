@@ -19,7 +19,9 @@ const AudioOutputSubMenu = GObject.registerClass(
 				this._updateDefaultSink();
 			}
 		});
-		this._updateDefaultSink();
+		if (this._updateDefaultSink) {
+			this._updateDefaultSink();
+		}
 		this.menu.connect('open-state-changed', (menu, isOpen) => {
 			if (isOpen)
 				this._updateSinkList();
