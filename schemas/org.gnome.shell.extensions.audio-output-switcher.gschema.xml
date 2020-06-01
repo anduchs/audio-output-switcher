@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema id="org.gnome.shell.extensions.audio-output-switcher" path="/org/gnome/shell/extensions/audio-output-switcher/">
+        <key type="as" name="switch-next-audio-output">
+            <default><![CDATA[['<Super>q']]]></default>
+            <summary>Switch to the next audio output device</summary>
+        </key>
+    </schema>
+</schemalist>
